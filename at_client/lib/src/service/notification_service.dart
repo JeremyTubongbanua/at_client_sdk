@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:at_client/src/exception/at_client_exception.dart';
 import 'package:at_client/src/response/at_notification.dart';
+import 'package:at_client/src/response/response.dart';
 import 'package:at_commons/at_commons.dart';
 
 abstract class NotificationService {
@@ -72,6 +73,9 @@ abstract class NotificationService {
   ///```
   Future<NotificationResult> notify(NotificationParams notificationParams,
       {Function? onSuccess, Function? onError});
+
+  /// Remove the notification from Notification Keystore.
+  Future<AtResponse> remove(String id);
 
   /// Stops all subscriptions on the current instance
   void stopAllSubscriptions();

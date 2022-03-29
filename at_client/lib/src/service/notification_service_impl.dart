@@ -7,8 +7,11 @@ import 'package:at_client/src/listener/at_sign_change_listener.dart';
 import 'package:at_client/src/listener/switch_at_sign_event.dart';
 import 'package:at_client/src/manager/monitor.dart';
 import 'package:at_client/src/preference/monitor_preference.dart';
+import 'package:at_client/src/response/default_response_parser.dart';
 import 'package:at_client/src/response/notification_response_parser.dart';
+import 'package:at_client/src/response/response.dart';
 import 'package:at_client/src/service/notification_service.dart';
+import 'package:at_commons/at_builders.dart';
 import 'package:at_commons/at_commons.dart';
 import 'package:at_utils/at_logger.dart';
 
@@ -259,5 +262,14 @@ class NotificationServiceImpl
     _logger.finer(
         '${_atClient.getCurrentAtSign()} monitor status: ${_monitor!.getStatus()}');
     return _monitor!.getStatus();
+  }
+
+  @override
+  Future<AtResponse> remove(String id) async {
+    var response = await _atClient
+        .getRemoteSecondary()!
+        .atLookUp
+        .executeVerb(NotifyDeleteVerbBuilder()..id = id);
+    return DefaultResponseParser().parse(response);
   }
 }
