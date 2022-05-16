@@ -26,6 +26,8 @@ void main() {
   AtLookupImpl mockAtLookup = MockAtLookup();
   AtClientImpl mockAtClientImpl = MockAtClientImpl();
   LocalSecondary mockLocalSecondary = MockLocalSecondary();
+  RemoteSecondary mockRemoteSecondary = MockRemoteSecondary();
+
 
   var lookupVerbBuilder = LookupVerbBuilder()
     ..atKey = 'phone.wavi'
@@ -46,6 +48,8 @@ void main() {
             throw AtExceptionUtils.get('AT0015', 'Connection timeout'));
     when(() => mockAtClientImpl.getLocalSecondary())
         .thenAnswer((_) => mockLocalSecondary);
+    when(() => mockAtClientImpl.getRemoteSecondary())
+        .thenAnswer((_) => mockRemoteSecondary);
     when(() => mockAtClientImpl.getCurrentAtSign()).thenAnswer((_) => '@xyz');
     when(() => mockLocalSecondary.getEncryptionPublicKey('@xyz'))
         .thenAnswer((_) => Future.value('dummy_encryption_public_key'));
@@ -92,6 +96,14 @@ void main() {
           throwsA(predicate((dynamic e) =>
               e is KeyNotFoundException &&
               e.message == 'shared encryption key not found')));
+    });
+
+    test('A test to verify timeout exception',() async{
+      AtClientImpl atClientImpl = await AtClientImpl.create('@sitaram', 'wavi', AtClientPreference()) as AtClientImpl;
+      //atClientImpl.getRequestTransformer = MockGetRequestTransformer();
+      atClientImpl.secondaryManager.atClient = mockAtClientImpl;
+
+      var result = atClientImpl.get(lookupKey);
     });
   });
 }

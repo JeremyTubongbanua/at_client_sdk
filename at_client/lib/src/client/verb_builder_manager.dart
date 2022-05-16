@@ -7,14 +7,14 @@ import 'package:at_utils/at_utils.dart';
 /// Class responsible for returning the appropriate [VerbBuilder] for given [AtKey]
 class LookUpBuilderManager {
   ///Returns a [VerbBuilder] for the given AtKey instance
-  static VerbBuilder get(AtKey atKey, String currentAtSign) {
+  static VerbBuilder get(AtKey atKey, String currentAtSign, String namespace) {
     // If isPublic is true in metadata, the key is a public key, return PLookupVerbHandler.
     if (atKey.sharedBy != currentAtSign &&
         (atKey.metadata != null &&
             atKey.metadata!.isPublic! &&
             !atKey.metadata!.isCached)) {
       return PLookupVerbBuilder()
-        ..atKey = AtClientUtil.getKeyWithNameSpace(atKey)
+        ..atKey = AtClientUtil.getKeyWithNameSpace(atKey, namespace)
         ..sharedBy = AtUtils.formatAtSign(atKey.sharedBy)
         ..operation = 'all';
     }
@@ -24,13 +24,13 @@ class LookUpBuilderManager {
             !atKey.metadata!.isCached &&
             !atKey.metadata!.isPublic!)) {
       return LookupVerbBuilder()
-        ..atKey = AtClientUtil.getKeyWithNameSpace(atKey)
+        ..atKey = AtClientUtil.getKeyWithNameSpace(atKey, namespace)
         ..sharedBy = AtUtils.formatAtSign(atKey.sharedBy)
         ..auth = true
         ..operation = 'all';
     }
     return LLookupVerbBuilder()
-      ..atKey = AtClientUtil.getKeyWithNameSpace(atKey)
+      ..atKey = AtClientUtil.getKeyWithNameSpace(atKey, namespace)
       ..sharedBy = AtUtils.formatAtSign(atKey.sharedBy)
       ..sharedWith = AtUtils.formatAtSign(atKey.sharedWith)
       ..isPublic = (atKey.metadata != null && atKey.metadata?.isPublic != null)
@@ -47,13 +47,17 @@ class LookUpBuilderManager {
 ///
 /// Basing the verb, the appropriate instance of secondary server is returned.
 class SecondaryManager {
-  static Secondary getSecondary(VerbBuilder verbBuilder) {
+  AtClient atClient;
+
+  SecondaryManager(this.atClient);
+
+  Secondary getSecondary(VerbBuilder verbBuilder) {
     if (verbBuilder is LookupVerbBuilder ||
         verbBuilder is PLookupVerbBuilder ||
         verbBuilder is NotifyVerbBuilder ||
         verbBuilder is StatsVerbBuilder) {
-      return AtClientManager.getInstance().atClient.getRemoteSecondary()!;
+      return atClient.getRemoteSecondary()!;
     }
-    return AtClientManager.getInstance().atClient.getLocalSecondary()!;
+    return atClient.getLocalSecondary()!;
   }
 }

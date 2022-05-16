@@ -36,6 +36,7 @@ import 'package:at_commons/at_commons.dart';
 import 'package:at_lookup/at_lookup.dart';
 import 'package:at_persistence_secondary_server/at_persistence_secondary_server.dart';
 import 'package:at_utils/at_utils.dart';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart';
 import 'package:uuid/uuid.dart';
 
@@ -50,6 +51,12 @@ class AtClientImpl implements AtClient {
   RemoteSecondary? _remoteSecondary;
 
   EncryptionService? _encryptionService;
+
+  @visibleForTesting
+  late GetRequestTransformer getRequestTransformer;
+
+  @visibleForTesting
+  late SecondaryManager secondaryManager;
 
   @override
   EncryptionService? get encryptionService => _encryptionService;
@@ -135,6 +142,9 @@ class AtClientImpl implements AtClient {
     _encryptionService!.remoteSecondary = _remoteSecondary;
     _encryptionService!.currentAtSign = currentAtSign;
     _encryptionService!.localSecondary = _localSecondary;
+    getRequestTransformer =
+        GetRequestTransformer(currentAtSign!, _preference!.namespace!);
+    secondaryManager = SecondaryManager(this);
   }
 
   Secondary getSecondary() {
@@ -241,9 +251,9 @@ class AtClientImpl implements AtClient {
       // validate the get request.
       await AtClientValidation.validateAtKey(atKey);
       // Get the verb builder for the atKey
-      var verbBuilder = GetRequestTransformer().transform(atKey);
+      var verbBuilder = getRequestTransformer.transform(atKey);
       // Execute the verb.
-      secondary = SecondaryManager.getSecondary(verbBuilder);
+      secondary = secondaryManager.getSecondary(verbBuilder);
       var getResponse = await secondary.executeVerb(verbBuilder);
       // Return empty value if getResponse is null.
       if (getResponse == null ||
@@ -394,7 +404,8 @@ class AtClientImpl implements AtClient {
       UpdateVerbBuilder verbBuilder =
           await PutRequestTransformer().transform(tuple);
       // Execute the verb builder
-      var putResponse = await SecondaryManager.getSecondary(verbBuilder)
+      var putResponse = await secondaryManager
+          .getSecondary(verbBuilder)
           .executeVerb(verbBuilder, sync: SyncUtil.shouldSync(atKey.key!));
       // If putResponse is null or empty, return empty response
       if (putResponse == null || putResponse.isEmpty) {

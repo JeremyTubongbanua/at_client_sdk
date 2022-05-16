@@ -30,14 +30,13 @@ class PutRequestTransformer
       updateVerbBuilder.sharedKeyEncrypted = tuple.one.metadata!.sharedKeyEnc;
       updateVerbBuilder.pubKeyChecksum = tuple.one.metadata!.pubKeyCS;
     }
-
     return updateVerbBuilder;
   }
 
   /// Populated [UpdateVerbBuilder] for the given [AtKey]
   UpdateVerbBuilder _populateUpdateVerbBuilder(AtKey atKey) {
     UpdateVerbBuilder updateVerbBuilder = UpdateVerbBuilder()
-      ..atKey = AtClientUtil.getKeyWithNameSpace(atKey)
+      ..atKey = AtClientUtil.getKeyWithNameSpace(atKey,'')
       ..sharedWith = AtUtils.formatAtSign(atKey.sharedWith)
       ..sharedBy = AtUtils.formatAtSign(atKey.sharedBy)
       ..isPublic =

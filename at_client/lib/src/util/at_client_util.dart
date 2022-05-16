@@ -113,23 +113,21 @@ class AtClientUtil {
   /// Accepts [AtKey] and returns [AtKey.key] with namespace appended
   /// Appends namespace if [atKey.metadata.namespaceAware] is set to true,
   /// else namespace is not appended
-  static String getKeyWithNameSpace(AtKey atKey) {
+  static String getKeyWithNameSpace(AtKey atKey, String namespace) {
     // Do not append namespace for encryption keys.
     if (!(atKey.metadata!.namespaceAware)) {
       return atKey.key!;
     }
     //Do not append namespace if already appended
-    if (atKey.key?.substring(atKey.key!.lastIndexOf('.') + 1) ==
-        AtClientManager.getInstance().atClient.getPreferences()?.namespace) {
+    if (atKey.key?.substring(atKey.key!.lastIndexOf('.') + 1) == namespace) {
       return atKey.key!;
     }
     // If key does not have any namespace, append the namespace to the key.
     if (atKey.namespace != null && atKey.namespace!.isNotEmpty) {
       return '${atKey.key}.${atKey.namespace!}';
     }
-    if (AtClientManager.getInstance().atClient.getPreferences()!.namespace !=
-        null) {
-      return '${atKey.key}.${AtClientManager.getInstance().atClient.getPreferences()!.namespace}';
+    if (namespace.isNotEmpty) {
+      return '${atKey.key}.$namespace}';
     }
     return atKey.key!;
   }

@@ -18,7 +18,7 @@ void main() {
           ..namespaceAware = false
           ..isPublic = true
           ..isCached = true);
-      var builder = LookUpBuilderManager.get(atKey, '@alice');
+      var builder = LookUpBuilderManager.get(atKey, '@alice','');
       expect(builder, isA<LLookupVerbBuilder>());
     });
 
