@@ -41,12 +41,12 @@ class RemoteSecondary implements Secondary {
     } on AtException catch (e) {
       throw e
         ..stack(AtChainedException(
-            Intent.fetchData, ExceptionScenario.remoteVerbExecutionFailed, e));
+            Intent.fetchData, ExceptionScenario.remoteVerbExecutionFailed, e.message));
     } on AtLookUpException catch (e) {
       var exception = AtExceptionUtils.get(e.errorCode!, e.errorMessage!);
       throw exception
         ..stack(AtChainedException(Intent.fetchData,
-            ExceptionScenario.remoteVerbExecutionFailed, exception));
+            ExceptionScenario.remoteVerbExecutionFailed, exception.message));
     }
   }
 
@@ -59,7 +59,7 @@ class RemoteSecondary implements Secondary {
     }on AtException catch (e) {
       throw e
         ..stack(AtChainedException(
-            Intent.fetchData, ExceptionScenario.remoteVerbExecutionFailed, e));
+            Intent.fetchData, ExceptionScenario.remoteVerbExecutionFailed, e.message));
     }
     return verbResult;
   }
@@ -71,13 +71,13 @@ class RemoteSecondary implements Secondary {
       return verbResult;
     } on AtException catch (e) {
       e.stack(AtChainedException(
-          Intent.fetchData, ExceptionScenario.remoteVerbExecutionFailed, e));
+          Intent.fetchData, ExceptionScenario.remoteVerbExecutionFailed, e.message));
       rethrow;
     } on AtLookUpException catch (e) {
       var exception = AtExceptionUtils.get(e.errorCode!, e.errorMessage!);
       throw exception
         ..stack(AtChainedException(Intent.fetchData,
-            ExceptionScenario.remoteVerbExecutionFailed, exception));
+            ExceptionScenario.remoteVerbExecutionFailed, exception.message));
     }
   }
 

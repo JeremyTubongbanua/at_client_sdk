@@ -28,7 +28,7 @@ abstract class AbstractAtKeyEncryption implements AtKeyEncryption {
       throw AtEncryptionException('Failed to encrypt the data')
         ..fromException(e)
         ..stack(AtChainedException(
-            Intent.shareData, ExceptionScenario.encryptionFailed, e));
+            Intent.shareData, ExceptionScenario.encryptionFailed, e.message));
     }
     // If sharedKey is empty, then -
     // Generate a new sharedKey
@@ -164,7 +164,7 @@ abstract class AbstractAtKeyEncryption implements AtKeyEncryption {
           'Failed to fetch public key of ${atKey.sharedWith}')
         ..fromException(e)
         ..stack(AtChainedException(
-            Intent.shareData, ExceptionScenario.keyNotFound, e));
+            Intent.shareData, ExceptionScenario.keyNotFound, e.message));
     }
     sharedWithPublicKey =
         DefaultResponseParser().parse(sharedWithPublicKey).response;

@@ -43,7 +43,7 @@ class GetResponseTransformer
             'Failed to decrypt the key ${tuple.one.toString()}')
           ..fromException(e)
           ..stack(AtChainedException(
-              Intent.fetchData, ExceptionScenario.decryptionFailed, e));
+              Intent.fetchData, ExceptionScenario.decryptionFailed, e.message));
       }
     }
 

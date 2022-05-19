@@ -25,7 +25,7 @@ class PutRequestTransformer
         throw AtEncryptionException('Failed to encrypt the data')
           ..fromException(e)
           ..stack(AtChainedException(
-              Intent.shareData, ExceptionScenario.encryptionFailed, e));
+              Intent.shareData, ExceptionScenario.encryptionFailed, e.message));
       }
       updateVerbBuilder.sharedKeyEncrypted = tuple.one.metadata!.sharedKeyEnc;
       updateVerbBuilder.pubKeyChecksum = tuple.one.metadata!.pubKeyCS;

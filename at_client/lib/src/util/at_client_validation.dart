@@ -57,8 +57,8 @@ class AtClientValidation {
       AtSignLogger('AtClientValidation')
           .severe('Failed validating the @atSign');
     } on SecondaryNotFoundException catch (e) {
-      e.stack(AtChainedException(
-          Intent.validateAtSign, ExceptionScenario.atSignDoesNotExist, e));
+      e.stack(AtChainedException(Intent.validateAtSign,
+          ExceptionScenario.atSignDoesNotExist, e.message));
       rethrow;
     }
   }
@@ -76,7 +76,8 @@ class AtClientValidation {
     // validates the metadata
     validateMetadata(atKey.metadata);
     // verifies if the sharedWith atSign exists.
-    if (atKey.sharedWith != null && await NetworkUtil.isNetworkAvailable()) {
+    if (atKey.sharedWith != null &&
+        await NetworkConnectivityChecker().checkConnectivity()) {
       await isAtSignExists(
           atKey.sharedWith!,
           AtClientManager.getInstance().atClient.getPreferences()!.rootDomain,

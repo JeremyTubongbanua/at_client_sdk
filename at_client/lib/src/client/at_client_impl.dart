@@ -273,7 +273,8 @@ class AtClientImpl implements AtClient {
       if (secondary is RemoteSecondary) {
         exceptionScenario = ExceptionScenario.remoteVerbExecutionFailed;
       }
-      e.stack(AtChainedException(Intent.fetchData, exceptionScenario, e));
+      e.stack(
+          AtChainedException(Intent.fetchData, exceptionScenario, e.message));
       throw AtExceptionManager.createException(e);
     }
   }
@@ -413,8 +414,8 @@ class AtClientImpl implements AtClient {
       }
       return PutResponseTransformer().transform(putResponse);
     } on AtException catch (e) {
-      e.stack(AtChainedException(
-          Intent.shareData, ExceptionScenario.localVerbExecutionFailed, e));
+      e.stack(AtChainedException(Intent.shareData,
+          ExceptionScenario.localVerbExecutionFailed, e.message));
       throw AtExceptionManager.createException(e);
     }
   }

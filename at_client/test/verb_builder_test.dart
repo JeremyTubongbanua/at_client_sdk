@@ -18,7 +18,7 @@ void main() {
           ..namespaceAware = false
           ..isPublic = true
           ..isCached = true);
-      var builder = LookUpBuilderManager.get(atKey, '@alice','');
+      var builder = LookUpBuilderManager.get(atKey, '@alice', '');
       expect(builder, isA<LLookupVerbBuilder>());
     });
 
@@ -33,7 +33,7 @@ void main() {
         ..metadata = (Metadata()
           ..isCached = true
           ..namespaceAware = false);
-      var builder = LookUpBuilderManager.get(atKey, '@alice');
+      var builder = LookUpBuilderManager.get(atKey, '@alice', 'wavi');
       expect(builder, isA<LLookupVerbBuilder>());
     });
 
@@ -45,7 +45,7 @@ void main() {
         ..sharedBy = '@alice'
         ..sharedWith = '@alice'
         ..metadata = (Metadata()..namespaceAware = false);
-      var builder = LookUpBuilderManager.get(atKey, '@alice');
+      var builder = LookUpBuilderManager.get(atKey, '@alice', 'wavi');
       expect(builder, isA<LLookupVerbBuilder>());
     });
 
@@ -54,7 +54,7 @@ void main() {
         ..key = 'phone'
         ..sharedBy = '@alice'
         ..metadata = (Metadata()..namespaceAware = false);
-      var builder = LookUpBuilderManager.get(atKey, '@alice');
+      var builder = LookUpBuilderManager.get(atKey, '@alice', 'wavi');
       expect(builder, isA<LLookupVerbBuilder>());
     });
 
@@ -65,7 +65,7 @@ void main() {
         ..metadata = (Metadata()
           ..isHidden = true
           ..namespaceAware = false);
-      var builder = LookUpBuilderManager.get(atKey, '@alice');
+      var builder = LookUpBuilderManager.get(atKey, '@alice', 'wavi');
       expect(builder, isA<LLookupVerbBuilder>());
     });
 
@@ -79,7 +79,7 @@ void main() {
         ..metadata = (Metadata()
           ..isPublic = true
           ..namespaceAware = false);
-      var builder = LookUpBuilderManager.get(atKey, '@bob');
+      var builder = LookUpBuilderManager.get(atKey, '@bob', 'wavi');
       expect(builder, isA<PLookupVerbBuilder>());
     });
 
@@ -91,7 +91,7 @@ void main() {
         ..key = 'phone'
         ..sharedBy = '@alice'
         ..metadata = (Metadata()..namespaceAware = false);
-      var builder = LookUpBuilderManager.get(atKey, '@bob');
+      var builder = LookUpBuilderManager.get(atKey, '@bob', 'wavi');
       expect(builder, isA<LookupVerbBuilder>());
     });
   });

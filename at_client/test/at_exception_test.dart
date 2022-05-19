@@ -2,12 +2,22 @@ import 'package:at_client/at_client.dart';
 import 'package:at_client/src/client/verb_builder_manager.dart';
 import 'package:at_client/src/decryption_service/shared_key_decryption.dart';
 import 'package:at_client/src/transformer/request_transformer/get_request_transformer.dart';
+import 'package:at_client/src/util/network_util.dart';
 import 'package:at_commons/at_builders.dart';
+import 'package:at_commons/at_commons.dart';
 import 'package:at_lookup/at_lookup.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
-class MockRemoteSecondary extends Mock implements RemoteSecondary {}
+class MockRemoteSecondary extends Mock implements RemoteSecondary {
+  @override
+  Future<String> executeVerb(VerbBuilder builder, {bool? sync = false}) {
+    if (builder is LookupVerbBuilder) {
+      throw AtTimeoutException('connection timeout');
+    }
+    return Future.value('123');
+  }
+}
 
 class MockAtLookup extends Mock implements AtLookupImpl {}
 
@@ -22,12 +32,16 @@ class MockGetRequestTransformer extends Mock implements GetRequestTransformer {}
 
 class MockSecondaryManager extends Mock implements SecondaryManager {}
 
+class MockNetworkConnectivityChecker extends Mock
+    implements NetworkConnectivityChecker {}
+
 void main() {
   AtLookupImpl mockAtLookup = MockAtLookup();
   AtClientImpl mockAtClientImpl = MockAtClientImpl();
   LocalSecondary mockLocalSecondary = MockLocalSecondary();
   RemoteSecondary mockRemoteSecondary = MockRemoteSecondary();
-
+  NetworkConnectivityChecker mockNetworkConnectivityChecker =
+      MockNetworkConnectivityChecker();
 
   var lookupVerbBuilder = LookupVerbBuilder()
     ..atKey = 'phone.wavi'
@@ -55,6 +69,8 @@ void main() {
         .thenAnswer((_) => Future.value('dummy_encryption_public_key'));
     when(() => mockLocalSecondary.executeVerb(llookupVerbBuilder))
         .thenAnswer((_) async => 'dummy_shared_key');
+    when(() => mockNetworkConnectivityChecker.checkConnectivity())
+        .thenAnswer((_) async => Future.value(true));
   });
   // The AtLookup verb throws exception is stacked by the executeVerb in remote secondary
   test('Test to verify exception gets stacked in remote secondary executeVerb',
@@ -98,12 +114,35 @@ void main() {
               e.message == 'shared encryption key not found')));
     });
 
-    test('A test to verify timeout exception',() async{
-      AtClientImpl atClientImpl = await AtClientImpl.create('@sitaram', 'wavi', AtClientPreference()) as AtClientImpl;
-      //atClientImpl.getRequestTransformer = MockGetRequestTransformer();
+    test(
+        'A test to verify AtTimeout Exception is chained and thrown as AtClientException',
+        () async {
+      AtClientImpl atClientImpl =
+          await AtClientImpl.create('@sitaram', 'wavi', AtClientPreference())
+              as AtClientImpl;
       atClientImpl.secondaryManager.atClient = mockAtClientImpl;
+      expect(
+          () => atClientImpl.get(lookupKey),
+          throwsA(predicate((dynamic e) =>
+              e is AtClientException &&
+              e.getTraceMessage() ==
+                  'Failed to fetch data caused by\nconnection timeout')));
+    });
 
-      var result = atClientImpl.get(lookupKey);
+    test('A test to verify AtPublicKeyChangeException', () async {
+      AtClientImpl atClientImpl =
+          await AtClientImpl.create('@sitaram', 'wavi', AtClientPreference())
+              as AtClientImpl;
+      atClientImpl.secondaryManager.atClient = mockAtClientImpl;
+      expect(
+          () => atClientImpl.get(AtKey()
+            ..key = 'phone.wavi'
+            ..sharedBy = '@sitaram'
+            ..sharedWith = '@murali'),
+          throwsA(predicate((dynamic e) =>
+              e is AtClientException &&
+              e.getTraceMessage() ==
+                  'Failed to fetch data caused by\nconnection timeout')));
     });
   });
 }

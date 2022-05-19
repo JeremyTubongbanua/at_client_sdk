@@ -12,3 +12,12 @@ class NetworkUtil {
     return result;
   }
 }
+
+class NetworkConnectivityChecker {
+  Future<bool> checkConnectivity() async {
+    if (await NetworkUtil.isNetworkAvailable()) {
+      return true;
+    }
+    return false;
+  }
+}

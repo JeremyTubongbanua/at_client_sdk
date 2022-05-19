@@ -136,7 +136,7 @@ class LocalSecondary implements Secondary {
       _logger.severe('exception in llookup:${e.toString()}');
       rethrow;
     } on KeyNotFoundException catch (e) {
-      e.stack(AtChainedException(Intent.fetchData, ExceptionScenario.keyNotFound, e));
+      e.stack(AtChainedException(Intent.fetchData, ExceptionScenario.keyNotFound, e.message));
       rethrow;
     }
   }
